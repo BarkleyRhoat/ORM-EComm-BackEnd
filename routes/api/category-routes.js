@@ -88,6 +88,8 @@ router.delete('/:id', async (req, res) => {
       }
     });
 
+    res.status(200).json(deletedCategory)
+
   } catch (error) {
 
     res.status(500).json({ message: 'Server error'});

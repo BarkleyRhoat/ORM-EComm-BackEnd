@@ -9,7 +9,8 @@ router.get('/', async (req, res) => {
     const products = await Product.findAll({
       include: [
         { model: Category },
-        { model: Tag, through: ProductTag }
+        { model: Tag }
+        // { model: Tag, through: ProductTag }
       ]
     });
     res.status(200).json(products);
@@ -26,7 +27,8 @@ router.get('/:id', async (req, res) => {
     const product = await Product.findByPk(req.params.id, {
       include: [
         { model: Category },
-        { model: Tag, through: ProductTag }
+        { model: Tag}
+        // { model: Tag, through: ProductTag }
       ]
     });
     res.status(200).json(product);
@@ -42,12 +44,15 @@ router.post('/', async (req, res) => {
   try {
     const product = await Product.create(req.body);
 
-    if (req.body.tagIds && req.body.tagIds.length) {
+    // if (req.body.tagIds && req.body.tagIds.length)
+    if (req.body.tagIds.length) {
       const productTagIdArr = req.body.tagIds.map((tag_id) => ({
         product_id: product.id,
         tag_id
       }));
+
       await ProductTag.bulkCreate(productTagIdArr);
+      
     }
 
     res.status(200).json(product);
@@ -59,11 +64,22 @@ router.post('/', async (req, res) => {
 
 // update product
 router.put('/:id', async (req, res) => {
+
+  // try {
+
+  //   const [numRowsUpdated, updatedProduct] = await Product.update(req.body, {
+  //     where: { id: req.params.id },
+  //     returning: true
+
+  //   });
   try {
-    const [numRowsUpdated, updatedProduct] = await Product.update(req.body, {
-      where: { id: req.params.id },
-      returning: true
+
+    const [updatedRowsCount] = await Product.update(req.body, {
+      where: {
+        id: req.params.id,
+      },
     });
+  
 
     if (req.body.tagIds && req.body.tagIds.length) {
       const productTags = await ProductTag.findAll({
@@ -88,6 +104,8 @@ router.put('/:id', async (req, res) => {
       ]);
     }
 
+    const updatedProduct = await Product.findByPk(req.params.id);
+
     res.json(updatedProduct);
   } catch (err) {
     console.log(err);
@@ -98,36 +116,15 @@ router.put('/:id', async (req, res) => {
 // delete one product by its `id` value
 router.delete('/:id', async (req, res) => {
   try {
-    const result = await Product.destroy({
+    const deletedProduct = await Product.destroy({
       where: { id: req.params.id }
     });
 
-    if (result) {
-      res.status(200).json({ message: 'Product deleted successfully' });
-    } else {
-      res.status(404).json({ message: 'Product not found' });
-    }
+    res.status(200).json(deletedProduct);
+
   } catch (err) {
     res.status(500).json(err);
   }
 });
-
-// delete one product by its `id` value
-router.delete('/:id', async (req, res) => {
-  try {
-    const result = await Product.destroy({
-      where: { id: req.params.id }
-    });
-
-    if (result) {
-      res.status(200).json({ message: 'Product deleted successfully' });
-    } else {
-      res.status(404).json({ message: 'Product not found' });
-    }
-  } catch (err) {
-    res.status(500).json(err);
-  }
-});
-
 
 module.exports = router;
