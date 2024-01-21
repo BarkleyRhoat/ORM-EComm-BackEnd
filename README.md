@@ -27,9 +27,11 @@
   n/a
   ## Testing
 
-  ![screenshot]()
-  
-  [video of walkthrough]()
+  ![screenshot](/img/GET1.png)
+  ![screenshot](/img/GET2.png)
+  ![screenshot](/img/POST1.png)
+
+  [video of walkthrough](https://drive.google.com/file/d/1KdOwYGE7fdq12BM0D8aKdpupUpDak0gb/view)
 
   
   ## License
